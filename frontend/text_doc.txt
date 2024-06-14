@@ -1,0 +1,2 @@
+1. " cd .\frontend\ "    ##this command is usd to move to frontend folder
+2. " npm create vite@latest . "       ## to use vite+React

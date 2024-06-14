@@ -1,0 +1,7 @@
+1. "npm int -y "  ## this will give us the package of Json file to install different dependencies
+2. " npm install express mongoose jsonwebtoken bcryptjs dotenv cors cookie-parser cloudinary "   
+   ## installing all the dependencies at ones
+3. " npm i -D nodemon "     ##nodemon is a tool that helps develop node.js based applications by 
+   automatically restarting the node application when file changes in the directory are detected.
+
+4. " npm run dev "  ##to Start the server
