@@ -2,10 +2,13 @@ import express from "express";
 import { signup } from "../controllers/auth.controller.js";
 import { login } from "../controllers/auth.controller.js";
 import { logout } from "../controllers/auth.controller.js";
+import { getMe } from "../controllers/auth.controller.js";
+import { protectRoute } from "../middleware/protectRoute.js";
 
 const router = express.Router();
 
 //Get The Request
+router.get("/me", protectRoute, getMe);
 //ROUTE 1: Signup: POST "/api/auth/signup". 
 //All the necessary functionality are written in auth.controller.js
 router.post("/signup", signup);
