@@ -2,10 +2,18 @@ import express from "express";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import connectMongoDB from "./db/connectMongoDB.js";
 import cookieParser from "cookie-parser";
+import { v2 as cloudinary} from "cloudinary";
 
 dotenv.config();
+//using we have connected our cloudnary account now we can Upload or Delete images
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 
@@ -22,6 +30,7 @@ app.use(cookieParser()); // middleware to get the cookie
 //we will link the routes using app.use
 //we are linking the data present at './routes/auth' to the 'localhost:8000/api/auth'
 app.use("/api/auth" , authRoutes);
+app.use("/api/users" , userRoutes);
 
 
 app.listen(PORT, ()=>{
