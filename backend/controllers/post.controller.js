@@ -189,7 +189,7 @@ export const getLikedPosts = async (req, res) => {
 //GET all the POST that we are following
 export const getFollowingPosts = async (req, res) => {
 	try {
-		const userId = req.user._id;
+		const userId = req.user._id; //It gives currently Authenticated USER
 		const user = await User.findById(userId);
 		if (!user) return res.status(404).json({ error: "User not found" });
 
