@@ -20,7 +20,7 @@ cloudinary.config({
 
 const app = express();
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 
 //to parse req.body then we have to use a middleware
 app.use(express.json());
