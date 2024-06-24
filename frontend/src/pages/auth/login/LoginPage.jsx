@@ -27,6 +27,7 @@ const LoginPage = () => {
 	return (
 		<div className='max-w-screen-xl mx-auto flex h-screen'>
 			<div className='flex-1 hidden lg:flex items-center  justify-center'>
+				{/* It's the Twitter Logo (X) */}
 				<XSvg className='lg:w-2/3 fill-white' />
 			</div>
 			<div className='flex-1 flex flex-col justify-center items-center'>
