@@ -3,8 +3,8 @@ check the above link to follow all the steps we have used for installing TAilwin
 
 step 1. " cd .\frontend\ "    ##this command is usd to move to frontend folder
 step 2. " npm create vite@latest . "       ## to use vite+React
-step 3. npm install -D tailwindcss postcss autoprefixer
-step 4. npx tailwindcss init -p
+step 3. " npm install -D tailwindcss postcss autoprefixer "
+step 4. " npx tailwindcss init -p " 
 step 5. copy the Tailwind doc and update code present in tailwind.config.js
 step 6. follow the next step and update the 
 
@@ -13,4 +13,11 @@ step 6. follow the next step and update the
 9. read the above doc to install and use daisy
 
 10. We will install React route dom to add different pages and to handle the routing
-npm install react-router-dom react-icons
+    " npm install react-router-dom react-icons "
+
+11. TanStack Query :  it makes fetching, caching, synchronizing and updating server state in your web applications a breeze.
+    " npm i @tanstack/react-query "
+
+12. Using React-Hot-Toast : This will enable pop-up message like (success , Error , etc)
+link : https://react-hot-toast.com/
+    " npm i react-hot-toast "    
