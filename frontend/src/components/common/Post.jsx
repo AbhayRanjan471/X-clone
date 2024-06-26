@@ -6,20 +6,57 @@ import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {toast} from "react-hot-toast";
+
+import LoadingSpinner from "./LoadingSpinner";
+
+
 
 
 const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
+
+	// Getting the authenticated User
+	const {data:authUser} = useQuery({queryKey: ["authUser"]});
+	const queryClient = useQueryClient();
+
+	// function to DELETE the post
+	const { mutate: deletePost, isPending } = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/posts/${post._id}`, {
+					method: "DELETE",
+				});
+				const data = await res.json();
+
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+		onSuccess: () => {
+			toast.success("Post deleted successfully");
+			// it will remove the post from the profile
+			queryClient.invalidateQueries({ queryKey: ["posts"] });
+		},
+	});
+
 	const postOwner = post.user;
 	const isLiked = false;
 
-	const isMyPost = true;
+	const isMyPost = authUser._id === post.user._id; //checking weither the post belong to the authenticated user
 
 	const formattedDate = "1h";
 
 	const isCommenting = false;
 
-	const handleDeletePost = () => {};
+	const handleDeletePost = () => {
+		deletePost(); //calling the function to deleet the post
+	};
 
 	const handlePostComment = (e) => {
 		e.preventDefault();
@@ -58,7 +95,9 @@ const Post = ({ post }) => {
 						{isMyPost && (
 							<span className='flex justify-end flex-1'>
                                 {/* Deleting the Post */}
-								<FaTrash className='cursor-pointer hover:text-red-500' onClick={handleDeletePost} />
+							{!isPending &&	<FaTrash className='cursor-pointer hover:text-red-500' onClick={handleDeletePost} />}
+
+								{isPending && (<LoadingSpinner size="sm"/>)}
 							</span>
 						)}
 					</div>
