@@ -40,7 +40,7 @@ const HomePage = () => {
 				<CreatePost />
 
 				{/* POSTS */}
-				<Posts />
+				<Posts feedType={feedType}/> {/*passing the feetType*/}
 			</div>
 		</>
 	);
