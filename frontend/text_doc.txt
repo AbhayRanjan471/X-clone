@@ -17,6 +17,9 @@ step 6. follow the next step and update the
 
 11. TanStack Query :  it makes fetching, caching, synchronizing and updating server state in your web applications a breeze.
     " npm i @tanstack/react-query "
+    Note: In this web-app we have used two React-query ie: [useQuery() and mutation] using this we have conneted our backend functionality 
+    with the frontend. Instead of writing all the functionality by ourself we have used React-Query (which has the inbuild functionality 
+    as mentioned above)
 
 12. Using React-Hot-Toast : This will enable pop-up message like (success , Error , etc)
 link : https://react-hot-toast.com/
