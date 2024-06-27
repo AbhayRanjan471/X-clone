@@ -11,8 +11,11 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { useQuery } from "@tanstack/react-query";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
+import useFollow from "../../hooks/useFollow"
+import toast from "react-hot-toast";
 
 const ProfilePage = () => {
 	const [coverImg, setCoverImg] = useState(null);
@@ -24,7 +27,12 @@ const ProfilePage = () => {
 
 	const {username} = useParams(); // getting this 'username' from the App.jsx
 
-	const isMyProfile = true;
+	const {follow, isPending} = useFollow();
+
+	const queryClient = useQueryClient();
+
+	// getting the authUser from Query
+	const {data: authUser} = useQuery({queryKey: ["authUser"]})
 
 
     // // created a dummy User
@@ -56,8 +64,49 @@ const ProfilePage = () => {
 		},
 	});
 
-	//getting the DATE when the user has been created
+	//creting mutation function to update the Profile
+	const {mutate: updateProfile , isPending:isUpdatingProfile} = useMutation({
+		mutationFn: async () =>{
+			try {
+				const res = await fetch(`/api/users/update`, {
+					method: "POST",
+					headers: {
+						"Content-Type" : "application/json",
+					},
+					body: JSON.stringify({
+						//these 2 things which the user will update
+						coverImg,
+						profileImg
+					}),
+				})
+				const data = await res.json();
+				if(!res.ok){
+					throw new Error(data.error || "Something went wrong");
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error.message)
+				
+			}
+		},
+		onSuccess: () =>{
+			toast.success("Profile updated successfully")
+			Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["authUser"]}),
+				queryClient.invalidateQueries({ queryKey: ["userProfile"]}),
+			])
+		},
+		onError: (error) =>{
+			toast.error(error.message)
+		}
+	})
+
+	const isMyProfile = authUser._id === user?._id;
+    //getting the DATE when the user has been created
 	const memberSinceDate = formatMemberSinceDate(user?.createdAt);
+
+	//This the way we can check weither we are Following the user or not
+	const amIFollowing = authUser?.following.includes(user?._id);
 
     // created a function to ADD or UPDATE the Profile or cover image
 	const handleImgChange = (e, state) => {
@@ -147,22 +196,24 @@ const ProfilePage = () => {
 							</div>
 
 							<div className='flex justify-end px-4 mt-5'>
-                                {/* Addedthe Edit Profile Model , only the user to whom the account belong can make chages to it's user details */}
-								{isMyProfile && <EditProfileModal />}
+                                {/* Added the Edit Profile Model , only the user to whom the account belong can make chages to it's user details */}
+								{isMyProfile && <EditProfileModal authUser={authUser} />}
 								{!isMyProfile && (
 									<button
 										className='btn btn-outline rounded-full btn-sm'
-										onClick={() => alert("Followed successfully")}
+										onClick={() => follow(user?._id)} // passing the user._id so as to follow or unfollow whom we want
 									>
-										Follow
+										{isPending && "Loading..."}
+										{!isPending && amIFollowing && "Unfollow"}
+										{!isPending && !amIFollowing && "Follow"}
 									</button>
 								)}
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() => alert("Profile updated successfully")}
+										onClick={() => updateProfile()}
 									>
-										Update
+										{isUpdatingProfile ? "Updating..." : "Update"}
 									</button>
 								)}
 							</div>
