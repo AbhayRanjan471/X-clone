@@ -83,10 +83,16 @@ export const commentOnPost = async (req, res) => {
 
 		const comment = { user: userId, text };
 
+
 		post.comments.push(comment);
+
+		//checking : it's working 
+		const updatedComments = post.comments.filter((id) => id.toString() !== userId.toString());
+		
 		await post.save();
 
-		res.status(200).json(post);
+		// res.status(200).json(post);
+		res.status(200).json(updatedComments);
 	} catch (error) {
 		console.log("Error in commentOnPost controller: ", error);
 		res.status(500).json({ error: "Internal server error" });

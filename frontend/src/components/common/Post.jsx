@@ -45,7 +45,7 @@ const Post = ({ post }) => {
 		},
 	});
 
-	//mutation function to Like the Post
+	//mutation function to LIKE the Post
 	const { mutate: likePost, isPending: isLiking } = useMutation({
 		mutationFn: async () => {
 			try {
@@ -61,6 +61,7 @@ const Post = ({ post }) => {
 				throw new Error(error);
 			}
 		},
+		// updatedLikes : This we are getting it from the backend "post.controller.js"
 		onSuccess: (updatedLikes) => {
 			// this is not the best UX, bc it will refetch all posts
 			// queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -68,8 +69,51 @@ const Post = ({ post }) => {
 			// instead, update the cache directly for that post
 			queryClient.setQueryData(["posts"], (oldData) => {
 				return oldData.map((p) => {
-					if (p._id === post._id) { //comparing the that we jsut liked
-						return { ...p, likes: updatedLikes };
+					if (p._id === post._id) { //checking is it the post that we just liked
+						return { ...p, likes: updatedLikes }; // ..p : conatains all the values of the post
+					}
+					return p;
+				});
+			});
+		},
+		onError: (error) => {
+			toast.error(error.message);
+		},
+	});
+
+	//mutation function to COMMENT on the Post
+	const { mutate: commentPost, isPending: isCommenting } = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/posts/comment/${post._id}`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ text: comment }),
+				});
+				const data = await res.json();
+
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+		// updatedComments : This we are getting it from the backend "post.controller.js"
+		onSuccess: (updatedComments) => {
+			toast.success("Comment posted successfully");
+			setComment("");
+			// this is not the best UX, bc it will refetch all posts
+			// queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+			// instead, update the cache directly for that post
+			queryClient.setQueryData(["posts"], (oldData) => {
+				return oldData.map((p) => {
+					if (p._id === post._id) { //comparing the that we jsut commented
+						return { ...p, comments: updatedComments };
 					}
 					return p;
 				});
@@ -87,7 +131,6 @@ const Post = ({ post }) => {
 
 	const formattedDate = "1h";
 
-	const isCommenting = false;
 
 	const handleDeletePost = () => {
 		deletePost(); //calling the function to deleet the post
@@ -95,10 +138,12 @@ const Post = ({ post }) => {
 
 	const handlePostComment = (e) => {
 		e.preventDefault();
+		if(isCommenting)return;
+		commentPost();
 	};
 
 	const handleLikePost = () => {
-		if(isLiking)return;
+		if(isLiking)return;//sometimes what happen is humne kisi post ko like kiya or like hone k process me hai or usse wakt hum dubara like button me click kr dete hai ye soach k ki like nai howa hai to ase case me wo return kr jayega , warna kya ho ga ki dubara like() function call ho jayega or wo dislike ho jayega
 		//calling the like mutation functtion
 		likePost();
 	};
