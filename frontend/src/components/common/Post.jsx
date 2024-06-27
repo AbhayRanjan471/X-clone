@@ -10,6 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {toast} from "react-hot-toast";
 
 import LoadingSpinner from "./LoadingSpinner";
+import { formatPostDate } from "../../utils/date";
 
 
 
@@ -20,6 +21,14 @@ const Post = ({ post }) => {
 	// Getting the authenticated User
 	const {data:authUser} = useQuery({queryKey: ["authUser"]});
 	const queryClient = useQueryClient();
+
+	const postOwner = post.user;
+	const isLiked = post.likes.includes(authUser._id);
+
+	const isMyPost = authUser._id === post.user._id; //checking weither the post belong to the authenticated user
+
+	const formattedDate = formatPostDate(post.createdAt);
+
 
 	// mutation function to DELETE the post
 	const { mutate: deletePost, isPending: isDeleting } = useMutation({
@@ -124,13 +133,7 @@ const Post = ({ post }) => {
 		},
 	});
 
-	const postOwner = post.user;
-	const isLiked = post.likes.includes(authUser._id);
-
-	const isMyPost = authUser._id === post.user._id; //checking weither the post belong to the authenticated user
-
-	const formattedDate = "1h";
-
+	
 
 	const handleDeletePost = () => {
 		deletePost(); //calling the function to deleet the post
